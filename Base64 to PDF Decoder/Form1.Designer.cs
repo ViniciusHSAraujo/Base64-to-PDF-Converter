@@ -39,6 +39,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.chkLimparNome = new System.Windows.Forms.CheckBox();
+            this.cbModoJson = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnConverter
@@ -96,6 +97,7 @@
             this.tbBase64.MaxLength = 999999;
             this.tbBase64.Multiline = true;
             this.tbBase64.Name = "tbBase64";
+            this.tbBase64.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.tbBase64.Size = new System.Drawing.Size(775, 321);
             this.tbBase64.TabIndex = 2;
             // 
@@ -131,11 +133,24 @@
             this.chkLimparNome.Text = "Limpar o nome do arquivo";
             this.chkLimparNome.UseVisualStyleBackColor = true;
             // 
+            // cbModoJson
+            // 
+            this.cbModoJson.AutoSize = true;
+            this.cbModoJson.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.cbModoJson.Location = new System.Drawing.Point(618, 434);
+            this.cbModoJson.Name = "cbModoJson";
+            this.cbModoJson.Size = new System.Drawing.Size(169, 19);
+            this.cbModoJson.TabIndex = 101;
+            this.cbModoJson.Text = "Modo importação de JSON";
+            this.cbModoJson.UseVisualStyleBackColor = true;
+            this.cbModoJson.CheckedChanged += new System.EventHandler(this.cbModoJson_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 498);
+            this.Controls.Add(this.cbModoJson);
             this.Controls.Add(this.chkLimparNome);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tbLocalArquivo);
@@ -150,7 +165,6 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Base64 to PDF Converter by ViniciusHSAraujo";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -168,6 +182,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.CheckBox chkLimparNome;
+        private System.Windows.Forms.CheckBox cbModoJson;
     }
 }
 

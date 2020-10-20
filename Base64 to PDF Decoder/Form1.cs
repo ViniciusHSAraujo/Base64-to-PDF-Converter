@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Base64_to_PDF_Decoder.Models;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 using System.Windows.Forms;
 
 namespace Base64_to_PDF_Decoder
@@ -37,9 +41,31 @@ namespace Base64_to_PDF_Decoder
             try
             {
                 ValidarCamposEmBranco();
-                byte[] bytes = ConverterBase64ParaArrayDeBytes();
-                GerarArquivoPDF(bytes);
-                ExibirDialogDeInformacao(@$"Arquivo convertido com sucesso!");
+                if (!cbModoJson.Checked)
+                {
+                    byte[] bytes = ConverterBase64ParaArrayDeBytes(tbBase64.Text);
+                    GerarArquivoPDF(bytes, tbNomeDoArquivo.Text);
+                    ExibirDialogDeInformacao(@$"Arquivo convertido com sucesso!");
+                }
+                else
+                {
+                    List<ResponseJson> arquivos;
+                    try
+                    {
+                        arquivos = JsonConvert.DeserializeObject<List<ResponseJson>>(tbBase64.Text);
+                    }
+                    catch (Exception)
+                    {
+                        throw new Exception("O arquivo JSON enviado não é do formato válido!");
+                    }
+
+                    foreach (var arquivo in arquivos)
+                    {
+                        byte[] bytes = ConverterBase64ParaArrayDeBytes(arquivo.FileContent);
+                        GerarArquivoPDF(bytes, arquivo.NomeArquivo[0..^4]);
+                    }
+
+                }
                 LimparCampos();
             }
             catch (FormatException ex)
@@ -60,33 +86,33 @@ namespace Base64_to_PDF_Decoder
             tbBase64.Text = string.Empty;
         }
 
-        private void GerarArquivoPDF(byte[] bytes)
+        private void GerarArquivoPDF(byte[] bytes, string nomeDoArquivo)
         {
-            if (File.Exists(@$"{_localSalvamentoDoArquivo}\{tbNomeDoArquivo.Text}.pdf"))
+            if (File.Exists(@$"{_localSalvamentoDoArquivo}\{nomeDoArquivo}.pdf"))
             {
                 var confirmacao = ExibirDialogDeConfirmacao("Este arquivo já existe, deseja sobrescrevê-lo?");
                 if (confirmacao != DialogResult.OK)
                     throw new Exception("Geração de arquivo cancelada pelo usuário.");
-                
+
                 File.Delete(@$"{_localSalvamentoDoArquivo}\{tbNomeDoArquivo.Text}.pdf");
             }
 
-            FileStream stream = new FileStream(@$"{_localSalvamentoDoArquivo}\{tbNomeDoArquivo.Text}.pdf", FileMode.CreateNew);
+            FileStream stream = new FileStream(@$"{_localSalvamentoDoArquivo}\{nomeDoArquivo}.pdf", FileMode.CreateNew);
             BinaryWriter writer = new BinaryWriter(stream);
             writer.Write(bytes, 0, bytes.Length);
             writer.Close();
         }
 
-        private byte[] ConverterBase64ParaArrayDeBytes()
+        private byte[] ConverterBase64ParaArrayDeBytes(string text)
         {
-            var txtBase64 = tbBase64.Text;
+            var txtBase64 = text;
             byte[] bytes = Convert.FromBase64String(txtBase64);
             return bytes;
         }
 
         private void ValidarCamposEmBranco()
         {
-            if (string.IsNullOrWhiteSpace(tbNomeDoArquivo.Text))
+            if (!cbModoJson.Checked && string.IsNullOrWhiteSpace(tbNomeDoArquivo.Text))
             {
                 throw new Exception("Você não definiu o nome do arquivo!");
             }
@@ -122,9 +148,18 @@ namespace Base64_to_PDF_Decoder
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void cbModoJson_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (cbModoJson.Checked)
+            {
+                tbNomeDoArquivo.Enabled = false;
+                chkLimparNome.Enabled = false;
+            }
+            else
+            {
+                tbNomeDoArquivo.Enabled = true;
+                chkLimparNome.Enabled = true;
+            }
         }
     }
 }
