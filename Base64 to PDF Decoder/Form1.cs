@@ -117,6 +117,7 @@ namespace Base64_to_PDF_Decoder
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
             {
                 tbLocalArquivo.Text = folderBrowserDialog1.SelectedPath;
+                _localSalvamentoDoArquivo = folderBrowserDialog1.SelectedPath;
                 File.WriteAllText(_localConfig, folderBrowserDialog1.SelectedPath);
             }
         }
